@@ -104,9 +104,38 @@ const PREFIXES = {
 //   ESPRIT_DELETE_OK="verified duplicate" rm -rf x   →   rm -rf x
 const ASSIGNMENTS = /^\s*(?:[A-Za-z_]\w*=(?:"[^"]*"|'[^']*'|\S*)\s+)*/;
 
+// Split on separators the shell would honour, and ONLY those. A naive
+// cmd.split(/[;|\n]/) also cuts inside quoted arguments, which is how this
+// guard once refused a commit whose own message described the commands it
+// blocks: the sentence contained "gh pr create", the newline before it became
+// a segment boundary, and prose was executed as a command. Same failure as
+// v1's — inspecting what is NAMED instead of what is INVOKED — reached by a
+// different road, so the fix belongs in the splitter rather than a detector.
+const splitTop = (cmd) => {
+  const out = [];
+  let cur = "", quote = null, heredoc = null;
+  for (let i = 0; i < cmd.length; i++) {
+    const c = cmd[i];
+    if (heredoc) {                       // inside <<'X' … X, nothing is a command
+      cur += c;
+      if (c === "\n" && cmd.startsWith(heredoc, i + 1) &&
+          /^[\s\n]|$/.test(cmd[i + 1 + heredoc.length] || "")) heredoc = null;
+      continue;
+    }
+    if (quote) { cur += c; if (c === quote && cmd[i - 1] !== "\\") quote = null; continue; }
+    if (c === '"' || c === "'") { quote = c; cur += c; continue; }
+    const hd = /^<<-?\s*(['"]?)([A-Za-z_]\w*)\1/.exec(cmd.slice(i));
+    if (hd) { heredoc = hd[2]; cur += hd[0]; i += hd[0].length - 1; continue; }
+    if (c === ";" || c === "\n" || c === "|") { out.push(cur); cur = ""; continue; }
+    if (c === "&" && cmd[i + 1] === "&") { out.push(cur); cur = ""; i++; continue; }
+    cur += c;
+  }
+  out.push(cur);
+  return out;
+};
+
 const segments = (cmd) =>
-  cmd
-    .split(/\|\||&&|[;|\n]/)
+  splitTop(cmd)
     .map((s) => s.replace(ASSIGNMENTS, "").trim())
     .filter(Boolean)
     .map((seg) => {
@@ -176,6 +205,15 @@ const detectPublish = ({ toks, exe }) => {
     return `${exe} deploy`;
   if (/^(npm|pnpm|yarn)$/.test(exe) && sub === "publish") return `${exe} publish`;
   if (exe === "gh" && /^(pr|release)$/.test(sub) && toks[2] === "create") return `gh ${sub} create`;
+  // Found 2026-09-03 while publishing this very repository: `gh repo create`
+  // with --push or --source uploads the whole tree in one command, and the
+  // rule above let it through because it only looked at pr and release. A
+  // guard against silent publication that misses the command which publishes
+  // an entire repository is worse than none — it grants false confidence.
+  if (exe === "gh" && sub === "repo" && toks[2] === "create" &&
+      toks.some((t) => t === "--push" || t === "--source" || t.startsWith("--source=")))
+    return "gh repo create --push";
+  if (exe === "gh" && sub === "repo" && toks[2] === "sync") return "gh repo sync";
   if (exe === "docker" && sub === "push") return "docker push";
   if (/^(rsync|scp)$/.test(exe) && targets(toks).some((a) => REMOTE.test(a))) return `${exe} to a remote machine`;
   return null;

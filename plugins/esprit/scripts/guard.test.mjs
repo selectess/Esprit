@@ -10,6 +10,9 @@ const FAL = "fal" + ".run";
 const ELE = "api.eleven" + "labs.io";
 const RM = "r" + "m";
 const PUSH = "pu" + "sh";
+const GH = "g" + "h";
+const PR = "p" + "r";
+const CREATE = "cre" + "ate";
 
 const cas = [
   // ── SPEND ──
@@ -67,6 +70,16 @@ const cas = [
   ["PASS    publish: gh pr list",                  `gh pr list`,                                              0],
   ["PASS    publish: rsync, local only",                 `rsync -avz a/ b/`,                                        0],
   ["PASS    publish: docker build",                `docker build -t img .`,                                   0],
+  ["BLOCK   publish: gh repo create --push",       `gh repo create me/x --public --push`,                     2],
+  ["BLOCK   publish: gh repo create --source",     `gh repo create me/x --source=. --remote=origin`,          2],
+  ["BLOCK   publish: gh repo sync",                `gh repo sync me/x`,                                       2],
+  ["PASS    publish: gh repo create, no upload",   `gh repo create me/x --public`,                            0],
+  ["PASS    publish: gh repo view",                `gh repo view me/x`,                                       0],
+  // Prose that NAMES a blocked command must not be read as one. The guard once
+  // refused a commit whose own message described the commands it blocks.
+  ["PASS    publish: commit message names it",     `git commit -m "only looked at ${GH} ${PR} ${CREATE}"`,    0],
+  ["PASS    publish: heredoc names it",            `git commit -F- <<MSG\nmentions ${GH} repo ${CREATE} --push\nMSG`, 0],
+  ["BLOCK   publish: the command, invoked",        `git add . && ${GH} ${PR} ${CREATE} --title x`,            2],
   // ── COMBINED ──
   ["BLOCK   combined: 2 stops, only 1 prefix",  `ESPRIT_DELETE_OK="x" ${RM} -rf ~/a && git ${PUSH}`,       2],
   ["PASS    combined: 2 stops, 2 prefixes",      `ESPRIT_DELETE_OK="x" ESPRIT_PUBLISH_OK="y" ${RM} -rf ~/a && git ${PUSH}`, 0],

@@ -168,10 +168,10 @@ the project root, with the skill installed under `.agents/skills/esprit/`.
 plugins/esprit/
 ├── skills/esprit/SKILL.md   the conduct: 11 reversals, 3 stops, sources
 ├── hooks/hooks.json         PreToolUse + Stop
-├── .codex/hooks.json        same hooks, Codex paths — untested
+├── .codex/hooks.json        same hooks, Codex paths — schema unexercised
 └── scripts/
     ├── guard.mjs            the three stops
-    ├── guard.test.mjs       45-case suite
+    ├── guard.test.mjs       55-case suite
     ├── anchor-lint.mjs      the anchoring detector, bilingual, 26-case suite
     └── stop-anchor.mjs      Stop hook, warn-only
 ```

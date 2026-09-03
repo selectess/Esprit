@@ -52,6 +52,20 @@ const PAID = [
   { re: /api\.runwayml\.com/i,                      name: "Runway" },
   { re: /generativelanguage\.googleapis\.com/i,     name: "Google Generative AI" },
   { re: /aiplatform\.googleapis\.com/i,             name: "Vertex AI" },
+  { re: /texttospeech\.googleapis\.com/i,           name: "Google Cloud TTS" },
+
+  // Added 2026-09-03 after auditing OpenMontage's provider surface: an agentic
+  // video pipeline reaches for a much wider set of paid endpoints than a coding
+  // session does, and eight of its thirteen were passing the guard in silence.
+  // A stop that covers most of the spend is not a stop.
+  { re: /api\.fish\.audio|fish\.audio\/v1/i,        name: "fish.audio (voice cloning)" },
+  { re: /dashscope\.aliyun(cs)?\.com/i,             name: "Alibaba DashScope (Qwen)" },
+  { re: /klingai\.com/i,                            name: "Kling (video, avatar, lip-sync)" },
+  { re: /volces\.com|volcengine\.com/i,             name: "Volcengine Doubao (voice)" },
+  { re: /speech\.microsoft\.com|api\.cognitive\.microsoft\.com/i, name: "Azure AI Speech" },
+  { re: /api\.heygen\.com/i,                        name: "HeyGen (avatar)" },
+  { re: /higgsfield\.ai/i,                          name: "Higgsfield (video)" },
+  { re: /suno\.(ai|com)\/|api\.suno/i,              name: "Suno (music)" },
 ];
 
 const INTERPRETERS = /^(node|nodejs|bun|deno|npx|python3?|ts-node|tsx)$/;

@@ -23,6 +23,18 @@ const cas = [
   ["PASS    spend: echo merely mentions",        `echo "node ${KIE} shot"`,                                 0],
   ["PASS    spend: grep",                      `grep -r ${ELE} .`,                                        0],
   ["PASS    spend: ls on a path",          `ls ~/skills/${KIE}`,                                      0],
+  // Agentic video pipelines (OpenMontage and the like) reach far past the
+  // endpoints a coding session touches. Audited 2026-09-03.
+  ["BLOCK   spend: voice cloning",                `curl -X POST https://api.fish.audio/v1/tts`,              2],
+  ["BLOCK   spend: Alibaba DashScope",            `curl https://dashscope.aliyuncs.com/api/v1/x`,            2],
+  ["BLOCK   spend: Kling video",                  `curl https://api-singapore.klingai.com/v1/videos`,        2],
+  ["BLOCK   spend: Volcengine Doubao",            `curl https://ark.cn-beijing.volces.com/api/v3/tts`,       2],
+  ["BLOCK   spend: Azure Speech",                 `curl https://eastus.tts.speech.microsoft.com/cognitive`,   2],
+  ["BLOCK   spend: HeyGen avatar",                `curl https://api.heygen.com/v2/video`,                    2],
+  ["BLOCK   spend: Google Cloud TTS",             `curl https://texttospeech.googleapis.com/v1/text`,        2],
+  ["PASS    spend: free stock (Pexels)",          `curl https://www.pexels.com/api/videos`,                  0],
+  ["PASS    spend: public archive",               `curl https://archive.org/download/x.mp4`,                 0],
+  ["PASS    spend: local ffmpeg render",          `ffmpeg -i in.mp4 -c:v libx264 out.mp4`,                   0],
   // ── DELETE ──
   ["BLOCK   delete: rm -rf outside temp",            `${RM} -rf ~/.claude/skills/x`,                            2],
   ["BLOCK   delete: plain rm outside temp",         `${RM} ~/notes.md`,                                        2],
@@ -36,7 +48,7 @@ const cas = [
   ["PASS    delete: /tmp",                        `${RM} -f /tmp/case.json`,                                 0],
   ["PASS    delete: scratchpad",                  `${RM} -rf /private/tmp/claude-501/s/scratchpad/y`,        0],
   ["PASS    delete: variable + temp cited",        `P=/private/tmp/z; ${RM} -rf "$P"/*`,                      0],
-  ["PASS    delete: find -delete dans /tmp",      `find /tmp/x -delete`,                                     0],
+  ["PASS    delete: find -delete inside /tmp",      `find /tmp/x -delete`,                                     0],
   ["PASS    delete: git status",                  `git status --short`,                                      0],
   ["PASS    delete: soft git reset",              `git reset HEAD~1`,                                        0],
   // ── PUBLISH ──
@@ -50,7 +62,7 @@ const cas = [
   ["BLOCK   publish: rsync to a remote",          `rsync -avz ./dist root@srv.example:/var/www/`,            2],
   ["BLOCK   publish: scp to a remote",            `scp f.txt host.example:/tmp/`,                            2],
   ["PASS    publish: PUBLISH prefix",             `ESPRIT_PUBLISH_OK="go received" git ${PUSH} origin main`,     0],
-  ["PASS    publish: git commit seul",             `git commit -m "x"`,                                       0],
+  ["PASS    publish: git commit alone",             `git commit -m "x"`,                                       0],
   ["PASS    publish: npm install",                 `npm install`,                                             0],
   ["PASS    publish: gh pr list",                  `gh pr list`,                                              0],
   ["PASS    publish: rsync, local only",                 `rsync -avz a/ b/`,                                        0],

@@ -195,6 +195,14 @@ const detectDelete = ({ toks, exe }, cmd) => {
     if (sub === "clean" && toks.some((t) => /^-\w*f/.test(t))) return "git clean -f";
     if (sub === "reset" && toks.includes("--hard")) return "git reset --hard";
   }
+  // Found 2026-09-03, reaching for it: deleting an entire GitHub repository
+  // passed the delete stop untouched, because the detector only knew about
+  // files on disk. The most destructive deletion available was the one act
+  // this guard could not see.
+  if (exe === "gh" && toks[1] === "repo" && /^(delete|archive)$/.test(toks[2] || ""))
+    return `gh repo ${toks[2]}`;
+  if (/^(vercel|netlify)$/.test(exe) && /^(remove|rm|sites:delete)$/.test(toks[1] || ""))
+    return `${exe} ${toks[1]}`;
   return null;
 };
 

@@ -54,6 +54,11 @@ const cas = [
   ["PASS    delete: find -delete inside /tmp",      `find /tmp/x -delete`,                                     0],
   ["PASS    delete: git status",                  `git status --short`,                                      0],
   ["PASS    delete: soft git reset",              `git reset HEAD~1`,                                        0],
+  // Deleting a whole repository is a deletion, and it used to pass untouched.
+  ["BLOCK   delete: gh repo delete",              `${GH} repo delete me/x --yes`,                            2],
+  ["BLOCK   delete: gh repo archive",             `${GH} repo archive me/x`,                                 2],
+  ["BLOCK   delete: vercel remove",               `vercel remove my-app --yes`,                              2],
+  ["PASS    delete: gh repo clone",               `${GH} repo clone me/x`,                                   0],
   // ── PUBLISH ──
   ["BLOCK   publish: git push",                    `git ${PUSH} origin main`,                                 2],
   ["BLOCK   publish: git push after &&",           `git add . && git commit -m x && git ${PUSH}`,             2],

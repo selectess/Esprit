@@ -172,7 +172,7 @@ plugins/esprit/
 ├── .codex/hooks.json        same hooks, Codex paths — schema unexercised
 └── scripts/
     ├── guard.mjs            the three stops
-    ├── guard.test.mjs       63-case suite
+    ├── guard.test.mjs       67-case suite
     ├── anchor-lint.mjs      the anchoring detector, bilingual, 26-case suite
     └── stop-anchor.mjs      Stop hook, warn-only
 ```

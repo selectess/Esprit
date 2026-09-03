@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 230" width="880" height="230"
+     role="img" aria-labelledby="t d">
+<title id="t">The discriminator is not the number, it is what precedes it</title>
+<desc id="d">The same figure, 3,000 MAD, is flagged in the first sentence and ignored in
+the second. A copula asserts a quantity about the world; an indefinite subject with an
+example marker only illustrates one.</desc>
+
+<style>
+  .bg{fill:#0A1310} .edge{stroke:#22392F;fill:none}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+  .sans{font-family:"Instrument Sans",system-ui,-apple-system,sans-serif}
+  .ink{fill:#EEE8DB} .soft{fill:#8B9C92} .gold{fill:#C9A227}
+  .red{fill:#C96A5B} .grn{fill:#79B58F}
+</style>
+
+<rect class="bg" width="880" height="230" rx="14"/>
+<rect class="edge" x=".5" y=".5" width="879" height="229" rx="14"/>
+
+<text class="mono soft" x="34" y="32" font-size="10" letter-spacing="1.5">THE SAME FIGURE, TWICE</text>
+
+<!-- ── asserted ─────────────────────────────────────────────────────────── -->
+<g transform="translate(34,50)">
+  <!-- the deciding window sweeps over what PRECEDES the number, never over it -->
+  <rect x="-7" y="0" width="193" height="30" rx="5" fill="#C96A5B" opacity="0">
+    <animate attributeName="opacity" dur="7s" repeatCount="indefinite"
+             keyTimes="0;.05;.12;.42;.48;1" values="0;0;.14;.14;0;0"/>
+  </rect>
+  <rect x="-7" y="0" width="0" height="30" rx="5" fill="#C96A5B" opacity=".1">
+    <animate attributeName="width" dur="7s" repeatCount="indefinite" calcMode="spline"
+             keyTimes="0;.05;.12;.42;.46;1" keySplines=".4 0 .2 1;.4 0 .2 1;0 0 1 1;0 0 1 1;0 0 1 1"
+             values="0;0;193;193;0;0"/>
+  </rect>
+  <text class="sans" x="0" y="21" font-size="18"><tspan class="ink">The average basket </tspan><tspan class="ink" font-weight="600">is</tspan><tspan class="gold"> 3,000 MAD</tspan></text>
+  <text class="mono red" x="640" y="20" font-size="12.5">&#10007; flagged</text>
+  <text class="mono soft" x="0" y="44" font-size="10.5">a copula &#8594; <tspan class="red">ASSERTS</tspan> a quantity about the world</text>
+</g>
+
+<!-- ── illustrated ──────────────────────────────────────────────────────── -->
+<g transform="translate(34,124)">
+  <rect x="-7" y="0" width="123" height="30" rx="5" fill="#79B58F" opacity="0">
+    <animate attributeName="opacity" dur="7s" repeatCount="indefinite"
+             keyTimes="0;.52;.59;.9;.96;1" values="0;0;.12;.12;0;0"/>
+  </rect>
+  <rect x="234" y="0" width="128" height="30" rx="5" fill="#79B58F" opacity="0">
+    <animate attributeName="opacity" dur="7s" repeatCount="indefinite"
+             keyTimes="0;.62;.69;.9;.96;1" values="0;0;.12;.12;0;0"/>
+  </rect>
+  <text class="sans" x="0" y="21" font-size="18"><tspan class="ink" font-weight="600">A</tspan><tspan class="ink"> product </tspan><tspan class="ink" font-weight="600">at</tspan><tspan class="gold"> 3,000 MAD</tspan><tspan class="soft">, for example</tspan></text>
+  <text class="mono grn" x="640" y="20" font-size="12.5">&#10003; ignored</text>
+  <text class="mono soft" x="0" y="44" font-size="10.5">indefinite subject + example marker &#8594; <tspan class="grn">ILLUSTRATES</tspan> one</text>
+</g>
+
+<line class="edge" x1="34" y1="188" x2="846" y2="188"/>
+<text class="mono soft" x="34" y="212" font-size="11.5">Matching the number alone flagged 34 of the 35 it found. Reading what precedes it leaves 0.</text>
+</svg>

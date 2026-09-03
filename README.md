@@ -70,7 +70,9 @@ commercial equivalent because they are specific to agents — **sycophancy** and
 
 ## What is actually enforced
 
-This is the part most projects leave vague. Esprit publishes it as a table.
+This is the part most projects leave vague. Esprit publishes it as a picture.
+
+<p align="center"><img src="assets/diagram-enforced.svg" width="880" alt="Eleven segments, one per reversal. Reversal 1 and reversal 5 are gold: a hook enforces them. Nine are muted prose, and two of those have no known detection at all."></p>
 
 **Two of eleven reversals are mechanical. Nine are prose the model chooses to
 honour.** Saying so is itself reversal 9.
@@ -79,6 +81,8 @@ honour.** Saying so is itself reversal 9.
 
 Esprit acts alone on everything reversible. It stops dead on three acts — and a
 `PreToolUse` hook enforces all three:
+
+<p align="center"><img src="assets/diagram-three-stops.svg" width="880" alt="The same deletion twice. Unannounced, it is refused at the PreToolUse gate. Prefixed with an announcement written into the session transcript, it passes."></p>
 
 ```bash
 node kie.mjs shot …                                  # ⛔ refused
@@ -107,10 +111,7 @@ answers.
 Precision came from one insight: **the discriminator is not the number, it is what
 precedes it.**
 
-```
-"the average basket is 3,000 MAD"   → asserts  → flagged
-"a product at 3,000 MAD"            → illustrates → ignored
-```
+<p align="center"><img src="assets/diagram-discriminator.svg" width="880" alt="The same figure, 3,000 MAD, is flagged in one sentence and ignored in the other. A copula asserts a quantity about the world; an indefinite subject with an example marker only illustrates one."></p>
 
 Measured on a 1,691-line corpus:
 

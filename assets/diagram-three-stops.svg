@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 232" width="880" height="232"
+     role="img" aria-labelledby="t d">
+<title id="t">The guard refuses the silent act, never the act</title>
+<desc id="d">The same deletion twice. Unannounced, it is refused at the PreToolUse gate.
+Prefixed with an announcement that is written into the session transcript, it passes.</desc>
+
+<!-- A self-contained dark panel: identical under GitHub's light and dark themes,
+     so there is no picture element and no second file to keep in sync.
+
+     Everything is legible at rest. The animation only carries the eye along the
+     path; it never withholds meaning. A reader gives a README diagram about
+     three seconds, and a loop that pays off at second nine has already lost. -->
+<style>
+  .bg{fill:#0A1310} .edge{stroke:#22392F;fill:none}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+  .ink{fill:#EEE8DB} .soft{fill:#8B9C92} .gold{fill:#C9A227}
+  .red{fill:#C96A5B} .grn{fill:#79B58F}
+</style>
+
+<rect class="bg" width="880" height="232" rx="14"/>
+<rect class="edge" x=".5" y=".5" width="879" height="231" rx="14"/>
+
+<!-- the gate, standing for the whole run -->
+<text class="mono soft" x="548" y="34" font-size="10" letter-spacing="1.5">PreToolUse</text>
+<line x1="548" y1="46" x2="548" y2="164" stroke="#22392F" stroke-width="2"/>
+
+<!-- ── row one · unannounced ────────────────────────────────────────────── -->
+<g transform="translate(0,58)">
+  <rect x="34" y="0" width="300" height="34" rx="8" fill="#12211B" stroke="#22392F"/>
+  <text class="mono ink" x="50" y="22" font-size="12.5">rm -rf ~/project/old</text>
+  <line class="edge" x1="342" y1="17" x2="540" y2="17" stroke-dasharray="2 4"/>
+  <text class="mono red" x="568" y="22" font-size="12.5">&#9940; refused</text>
+  <text class="mono soft" x="672" y="22" font-size="11">silent</text>
+
+  <!-- the pulse: travels, then dies against the gate -->
+  <circle r="4" fill="#C96A5B" opacity="0">
+    <animate attributeName="cx" dur="6s" repeatCount="indefinite" calcMode="spline"
+             keyTimes="0;.04;.30;1" keySplines=".4 0 .6 1;.3 0 0 1;0 0 1 1"
+             values="340;340;544;544"/>
+    <animate attributeName="cy" dur="6s" repeatCount="indefinite" values="17;17" keyTimes="0;1"/>
+    <animate attributeName="opacity" dur="6s" repeatCount="indefinite"
+             keyTimes="0;.04;.28;.34;1" values="0;1;1;0;0"/>
+  </circle>
+  <!-- the gate rejects, visibly -->
+  <line x1="548" y1="-12" x2="548" y2="46" stroke="#C96A5B" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" dur="6s" repeatCount="indefinite"
+             keyTimes="0;.28;.32;.44;1" values="0;0;1;0;0"/>
+  </line>
+</g>
+
+<!-- ── row two · announced ──────────────────────────────────────────────── -->
+<g transform="translate(0,110)">
+  <rect x="34" y="0" width="300" height="46" rx="8" fill="#12211B" stroke="#C9A227"/>
+  <text class="mono" x="50" y="18" font-size="10.5"><tspan class="gold">ESPRIT_DELETE_OK=</tspan><tspan class="soft">"duplicate,</tspan></text>
+  <text class="mono soft" x="50" y="31" font-size="10.5">diff -rq empty"</text>
+  <text class="mono ink" x="50" y="42" font-size="11.5">rm -rf ~/project/old</text>
+  <line class="edge" x1="342" y1="23" x2="540" y2="23" stroke-dasharray="2 4"/>
+  <line class="edge" x1="556" y1="23" x2="646" y2="23" stroke-dasharray="2 4"/>
+  <text class="mono grn" x="660" y="28" font-size="12.5">&#10003; passes</text>
+
+  <circle r="4" fill="#79B58F" opacity="0">
+    <animate attributeName="cx" dur="6s" repeatCount="indefinite" calcMode="spline"
+             keyTimes="0;.50;.54;.86;1" keySplines="0 0 1 1;.4 0 .6 1;.25 0 .3 1;0 0 1 1"
+             values="340;340;340;652;652"/>
+    <animate attributeName="cy" dur="6s" repeatCount="indefinite" values="23;23" keyTimes="0;1"/>
+    <animate attributeName="opacity" dur="6s" repeatCount="indefinite"
+             keyTimes="0;.52;.56;.84;.9;1" values="0;0;1;1;0;0"/>
+  </circle>
+  <line x1="548" y1="-12" x2="548" y2="54" stroke="#C9A227" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" dur="6s" repeatCount="indefinite"
+             keyTimes="0;.66;.70;.80;1" values="0;0;1;0;0"/>
+  </line>
+</g>
+
+<line class="edge" x1="34" y1="182" x2="846" y2="182"/>
+<text class="mono soft" x="34" y="206" font-size="11.5">The guard forbids none of these acts. It forbids them being <tspan class="gold">silent</tspan>. The prefix writes the</text>
+<text class="mono soft" x="34" y="222" font-size="11.5">announcement into the transcript, and what is not announced is not executable.</text>
+</svg>

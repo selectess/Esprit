@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 268" width="880" height="268"
+     role="img" aria-labelledby="t d">
+<title id="t">Two of eleven reversals are mechanical. Nine are prose.</title>
+<desc id="d">Eleven segments, one per reversal. Reversal 1 and reversal 5 are gold: a hook
+enforces them. The other nine are muted prose the model chooses to honour, and two of
+those have no known detection at all. Publishing that ratio is itself reversal 9.</desc>
+
+<style>
+  .bg{fill:#0A1310} .edge{stroke:#22392F;fill:none}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+  .disp{font-family:"Bricolage Grotesque",Georgia,serif;font-weight:800}
+  .ink{fill:#EEE8DB} .soft{fill:#8B9C92} .gold{fill:#C9A227}
+  .seg{fill:#1B2E25} .segd{fill:#131F1A}
+  .num{font-size:9.5;letter-spacing:.5}
+</style>
+
+<rect class="bg" width="880" height="268" rx="14"/>
+<rect class="edge" x=".5" y=".5" width="879" height="267" rx="14"/>
+
+<text class="mono soft" x="34" y="32" font-size="10" letter-spacing="1.5">WHAT IS ACTUALLY ENFORCED</text>
+
+<!-- ═══ eleven segments, one per reversal ═════════════════════════════════
+     The width IS the count. Two gold of eleven is the whole argument, and it
+     has to be legible before a single frame of animation has played. -->
+<g transform="translate(34,50)">
+  <!-- 01 enforced -->
+  <rect x="0"   y="0" width="66" height="26" rx="3" fill="#C9A227"/>
+  <text class="mono num" x="26" y="17" fill="#0A1310">01</text>
+  <!-- 02 03 04 prose -->
+  <rect x="72"  y="0" width="66" height="26" rx="3" class="seg"/>
+  <rect x="144" y="0" width="66" height="26" rx="3" class="seg"/>
+  <rect x="216" y="0" width="66" height="26" rx="3" class="seg"/>
+  <text class="mono num soft" x="98"  y="17">02</text>
+  <text class="mono num soft" x="170" y="17">03</text>
+  <text class="mono num soft" x="242" y="17">04</text>
+  <!-- 05 enforced -->
+  <rect x="288" y="0" width="66" height="26" rx="3" fill="#C9A227"/>
+  <text class="mono num" x="314" y="17" fill="#0A1310">05</text>
+  <!-- 06–09 prose -->
+  <rect x="360" y="0" width="66" height="26" rx="3" class="seg"/>
+  <rect x="432" y="0" width="66" height="26" rx="3" class="seg"/>
+  <rect x="504" y="0" width="66" height="26" rx="3" class="seg"/>
+  <rect x="576" y="0" width="66" height="26" rx="3" class="seg"/>
+  <text class="mono num soft" x="386" y="17">06</text>
+  <text class="mono num soft" x="458" y="17">07</text>
+  <text class="mono num soft" x="530" y="17">08</text>
+  <text class="mono num soft" x="602" y="17">09</text>
+  <!-- 10–11 unsolved: darker still, because nobody knows how to detect these -->
+  <rect x="648" y="0" width="66" height="26" rx="3" class="segd" stroke="#22392F" stroke-dasharray="2 3"/>
+  <rect x="720" y="0" width="66" height="26" rx="3" class="segd" stroke="#22392F" stroke-dasharray="2 3"/>
+  <text class="mono num soft" x="674" y="17">10</text>
+  <text class="mono num soft" x="746" y="17">11</text>
+
+  <!-- the two enforced ones breathe, in turn -->
+  <rect x="0" y="0" width="66" height="26" rx="3" fill="#EEE8DB" opacity="0">
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite"
+             keyTimes="0;.06;.12;.20;1" values="0;0;.22;0;0"/></rect>
+  <rect x="288" y="0" width="66" height="26" rx="3" fill="#EEE8DB" opacity="0">
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite"
+             keyTimes="0;.30;.36;.44;1" values="0;0;.22;0;0"/></rect>
+</g>
+
+<!-- ═══ what each band means ══════════════════════════════════════════════ -->
+<g transform="translate(34,98)">
+  <text class="mono" x="0" y="12" font-size="11.5"><tspan class="gold">01 · cost before commitment</tspan><tspan class="soft">      PreToolUse hook · refuses the silent spend, deletion, publication</tspan></text>
+  <text class="mono" x="0" y="32" font-size="11.5"><tspan class="gold">05 · no number without provenance</tspan><tspan class="soft">   Stop hook · warns, never blocks</tspan></text>
+  <text class="mono soft" x="0" y="52" font-size="11.5">02 – 04 · 06 – 09                  prose in the skill · the model chooses to honour them</text>
+  <text class="mono soft" x="0" y="72" font-size="11.5">10 – 11                            sycophancy and simulated affect · detection unsolved</text>
+</g>
+
+<line class="edge" x1="34" y1="192" x2="846" y2="192"/>
+<text class="disp ink" x="34" y="226" font-size="25">Two of eleven are mechanical. Nine are prose.</text>
+<text class="mono soft" x="34" y="250" font-size="11.5">Most projects leave this ratio vague. Publishing it is itself reversal 9: state your holes.</text>
+</svg>

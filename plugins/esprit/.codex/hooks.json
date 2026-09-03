@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "shell|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \".agents/skills/esprit/scripts/guard.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Esprit — the three stops"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \".agents/skills/esprit/scripts/stop-anchor.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Esprit — anchoring check"
+          }
+        ]
+      }
+    ]
+  }
+}

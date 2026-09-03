@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/guard.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Esprit \u2014 the three stops"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/stop-anchor.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Esprit \u2014 anchoring check"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "esprit",
+  "description": "Esprit — a conduct layer for autonomous agents.",
+  "owner": { "name": "Mehdi Wahbi", "url": "https://github.com/selectess" },
+  "plugins": [
+    {
+      "name": "esprit",
+      "source": "./plugins/esprit",
+      "description": "Interrogates first, then drives alone. Stops only to spend, delete or publish — three stops enforced by hook. The bypass is the announcement.",
+      "version": "1.0.0",
+      "license": "MIT"
+    }
+  ]
+}

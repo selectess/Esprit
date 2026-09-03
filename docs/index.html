@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Esprit</title>
+<meta name="description" content="A conduct layer for autonomous agents. The dark patterns of persuasion, turned inward.">
+<link rel="icon" href="assets/mark-dark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="scrollcraft.css">
+<style>
+/* ──────────────────────────────────────────────────────────────────────────
+   Esprit — a scroll-driven 3D collage.
+
+   One idea, carried by the form. The eleven reversals are fragments
+   scattered in depth; scrolling flies the camera through them. A fragment
+   far from the reading plane is scattered, turned away and dim. As it nears
+   the plane it converges to centre, squares up to the reader and becomes
+   legible. Persuasion is the field. Examination is the focus.
+
+   Everything moves off ONE inherited variable. The engine writes --sc-p on
+   the act element; each fragment reads it and computes its own distance.
+   No per-frame JavaScript touches a fragment — the compositor does it all.
+   scrollcraft's devices.md prescribes exactly this: an element that wants a
+   continuous transform drives it from --sc-p in CSS rather than stacking a
+   second device on the same node.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root{
+  --sc-canvas:#080F0C; --sc-surface:#11201A;
+  --sc-ink:#EEE8DB;    --sc-ink-soft:#8B9C92;
+  --sc-accent:#C9A227; --sc-accent-ink:#080F0C;
+  --sc-font-display:"Bricolage Grotesque",Georgia,serif;
+  --sc-font-text:"Instrument Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --edge:#22392F;
+  --was:#7E8C84;              /* persuasion: present, muted, never shouted at */
+}
+*{box-sizing:border-box}
+/* Never smooth. A scroll-driven page and a smooth-scroll animation fight each
+   other for the same input, and the reader feels the page lag behind the wheel. */
+html{background:var(--sc-canvas); scroll-behavior:auto}
+body{
+  margin:0; background:var(--sc-canvas); color:var(--sc-ink);
+  font-family:var(--sc-font-text); font-size:17px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3{font-family:var(--sc-font-display); font-weight:800;
+  letter-spacing:-.025em; margin:0; text-wrap:balance}
+p{margin:0; text-wrap:pretty}
+a{color:var(--sc-accent)}
+::selection{background:var(--sc-accent); color:var(--sc-accent-ink)}
+
+/* ── the depth field ──────────────────────────────────────────────────────
+   .field IS the act's stage: the engine gives it position:sticky, height
+   100svh and overflow:clip. Never declare position on it — an equal-
+   specificity rule later in the cascade would silently kill the pin. */
+.field{ perspective:1150px; perspective-origin:50% 44%; }
+
+.deck{
+  position:absolute; inset:0; transform-style:preserve-3d;
+  /* The playhead, 0 → 12. Held at 0 through the first sliver of the act so
+     the title is readable at rest: a hero the reader must scroll to decode
+     is a hero that failed. */
+  --play: calc(max(0, var(--sc-p, 0) - .07) * 12.4);
+}
+
+/* Depth needs an atmosphere, or it reads as scale rather than distance. */
+.fog{
+  position:absolute; inset:0; pointer-events:none; z-index:3;
+  background:
+    radial-gradient(118% 80% at 50% 44%, transparent 30%, var(--sc-canvas) 86%),
+    linear-gradient(var(--sc-canvas) 0 1%, transparent 13% 87%, var(--sc-canvas) 99%);
+}
+
+.frag{
+  position:absolute; left:50%; top:50%;
+  width:min(90vw,660px);
+  --x:0; --y:0; --r:0; --i:0;
+
+  --d: calc(var(--i) - var(--play));            /* signed distance, in slots */
+  /* Scatter, wider than the distance so the very next fragment already clears
+     the centre. At 1:1 a 660px card one slot back still sits on the title. */
+  --s: clamp(0, calc(var(--d) * 1.4), 4.2);
+
+  transform:
+    translate(-50%,-50%)
+    translate3d(
+      calc(var(--x) * var(--s) * 1px),
+      calc(var(--y) * var(--s) * 1px + min(var(--d), 0) * 130px),
+      clamp(-4600px, calc(var(--d) * -540px), 260px)
+    )
+    rotateY(clamp(-22deg, calc(var(--d) * 6deg), 30deg))
+    rotate(calc(var(--r) * var(--s) * 1deg));
+
+  /* Two fades multiplied: distance haze, and the exit above the camera.
+     CSS clamps opacity to 0–1 on its own, so values over 1 cost nothing.
+     The haze has to bite from the first slot back: at a gentler rate the
+     fragment behind the one being read stays fully opaque and competes
+     with it, which is the difference between depth and clutter. */
+  opacity: calc((1.06 - var(--d) * .32) * (1 + min(var(--d), 0) * 2.1));
+  will-change:transform,opacity;
+}
+/* Scenery must not be reachable: a fragment away from the plane is out of
+   the tab order and out of the accessibility tree. */
+.frag[aria-hidden="true"]{ pointer-events:none }
+
+.rev{
+  background:linear-gradient(150deg,#12211B,#0B1612);
+  border:1px solid var(--edge); border-radius:15px;
+  box-shadow:0 40px 90px -42px #000, inset 0 1px 0 #ffffff0d;
+  padding:clamp(20px,4.4vw,34px);
+}
+.rev__no{
+  font-family:var(--mono); font-size:12px; letter-spacing:.16em;
+  color:var(--sc-accent); margin-bottom:16px; display:flex;
+  align-items:center; gap:12px;
+}
+.rev__no::after{content:""; height:1px; flex:1; background:var(--edge)}
+.rev__row{display:grid; gap:5px}
+.rev__row + .rev__row{margin-top:17px; padding-top:17px; border-top:1px solid var(--edge)}
+.rev__k{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--sc-ink-soft);
+}
+.rev__was{color:var(--was); font-size:clamp(15.5px,2.3vw,19px)}
+.rev__now{
+  color:var(--sc-ink); font-family:var(--sc-font-display); font-weight:600;
+  font-size:clamp(20px,3.4vw,29px); line-height:1.16; letter-spacing:-.02em;
+}
+.rev__tag{
+  display:inline-block; margin-top:16px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.08em;
+  color:var(--sc-accent-ink); background:var(--sc-accent);
+  padding:5px 11px; border-radius:999px;
+}
+.rev__tag--soft{background:transparent; color:var(--sc-ink-soft); border:1px solid var(--edge)}
+
+/* the title, which is simply fragment zero */
+.hero img{width:58px; height:58px; margin-bottom:24px; display:block}
+.hero h1{font-size:clamp(48px,10.5vw,104px); line-height:.9}
+.hero p{max-width:34ch; margin-top:20px; color:var(--sc-ink-soft);
+  font-size:clamp(17px,2.5vw,21px); line-height:1.45}
+.hero p b{color:var(--sc-ink); font-weight:500}
+.hero .go{margin-top:34px; font-family:var(--mono); font-size:11px;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--sc-ink-soft)}
+
+/* ── head-up display ──────────────────────────────────────────────────── */
+.hud{
+  position:absolute; z-index:4; left:clamp(16px,4vw,42px);
+  bottom:clamp(16px,4vw,40px); display:flex; align-items:flex-end; gap:14px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
+  color:var(--sc-ink-soft); pointer-events:none; font-variant-numeric:tabular-nums;
+}
+.hud b{color:var(--sc-ink); font-size:13px; font-weight:500}
+.hud__rail{width:2px; height:116px; background:var(--edge); position:relative; border-radius:2px}
+.hud__rail::after{
+  content:""; position:absolute; inset:0 0 auto; border-radius:2px;
+  height:calc(clamp(0, var(--rail,0), 1) * 100%); background:var(--sc-accent);
+}
+
+/* ── flat sections ────────────────────────────────────────────────────── */
+.mid{display:grid; place-items:center; padding:6vh 0}
+.wrap{width:min(92vw,64ch); margin:0 auto}
+.kicker{font-family:var(--mono); font-size:10.5px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--sc-accent); margin-bottom:18px}
+.sec h2{font-size:clamp(29px,5.4vw,50px); line-height:1.04; margin-bottom:20px}
+.sec p{color:var(--sc-ink-soft); max-width:58ch}
+.sec p + p{margin-top:18px}
+.sec p b{color:var(--sc-ink); font-weight:500}
+
+.term{
+  margin-top:28px; background:#0A1310; border:1px solid var(--edge);
+  border-radius:13px; padding:clamp(15px,3vw,24px);
+  font-family:var(--mono); font-size:clamp(10.5px,1.6vw,13.5px);
+  line-height:2.05; overflow-x:auto; white-space:pre;
+  box-shadow:0 30px 70px -42px #000;
+}
+.term .no{color:#C96A5B} .term .ok{color:#79B58F} .term .cm{color:var(--sc-ink-soft)}
+
+.grid2{display:grid; gap:13px; margin-top:28px; grid-template-columns:1fr 1fr}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+.tile{background:var(--sc-surface); border:1px solid var(--edge);
+  border-radius:13px; padding:19px}
+.tile h3{font-size:15.5px; margin-bottom:7px; letter-spacing:-.01em}
+.tile p{font-size:14.5px; margin:0; color:var(--sc-ink-soft)}
+.tile--on{border-color:var(--sc-accent)}
+.tile--on h3{color:var(--sc-accent)}
+
+.debts{margin:24px 0 0; padding:0; list-style:none}
+.debts li{padding:13px 0 13px 22px; border-top:1px solid var(--edge);
+  color:var(--sc-ink-soft); font-size:15px; position:relative}
+.debts li::before{content:"—"; position:absolute; left:0; color:var(--sc-accent)}
+.debts b{color:var(--sc-ink); font-weight:500}
+.debts code{font-family:var(--mono); font-size:13px; color:var(--sc-ink)}
+
+.cta{display:inline-block; margin-top:6px; background:var(--sc-accent);
+  color:var(--sc-accent-ink); text-decoration:none; font-weight:600;
+  padding:14px 26px; border-radius:11px}
+.foot{border-top:1px solid var(--edge); margin-top:56px; padding:28px 0 76px;
+  color:var(--sc-ink-soft); font-size:13.5px}
+.foot a{color:var(--sc-ink-soft)}
+
+@media (max-width:640px){
+  .field{perspective:820px}
+  .frag{width:88vw}
+  .hud{display:none}
+}
+
+/* ── reduced motion ───────────────────────────────────────────────────────
+   The collage is the navigation, not decoration. Zeroing the transform would
+   pile eleven fragments on one another and make ten unreachable, so the depth
+   field is dismantled instead: fragments return to document flow and the act
+   stops pinning. Same eleven, same order, no camera. */
+@media (prefers-reduced-motion:reduce){
+  .field{perspective:none}
+  #fly, #fly.sc-stage{position:static !important; height:auto !important;
+    overflow:visible !important}
+  .deck{position:static; transform-style:flat; display:grid; gap:20px;
+    padding:8vh 0; width:min(92vw,660px); margin:0 auto}
+  .frag{position:static; width:auto; transform:none; opacity:1}
+  .fog,.hud{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ THE FLY-THROUGH ═══════════════════════════════════════════════════
+     One long act. The title is fragment 0, the eleven reversals are 1–11.
+     9.4 screens for twelve fragments is about three-quarters of a screenful
+     each: the pace at which a card arrives, is read, and leaves without the
+     reader having to chase it. -->
+<section data-sc-act="pin" data-sc-span="8.6" aria-label="The eleven reversals">
+  <div data-sc-stage class="field" id="fly">
+    <div class="deck" id="deck">
+
+      <div class="frag hero" style="--i:0">
+        <img src="assets/mark-dark.svg" width="58" height="58" alt="">
+        <h1>Esprit</h1>
+        <p>A conduct layer for autonomous agents.<br>
+           The dark patterns of persuasion, <b>turned inward</b>.</p>
+        <div class="go">Scroll &middot; eleven reversals</div>
+      </div>
+
+      <div class="frag" style="--i:1;--x:-300;--y:-130;--r:-6">
+        <div class="rev">
+          <div class="rev__no">01 &middot; COST</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Reveals the fee at the last step.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Announces the cost before the commitment.</span></div>
+          <span class="rev__tag">⚙ enforced by a hook</span>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:2;--x:330;--y:96;--r:5">
+        <div class="rev">
+          <div class="rev__no">02 &middot; FRICTION</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Trims the form to raise conversion.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Asks everything in one pass.</span></div>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:3;--x:-250;--y:150;--r:7">
+        <div class="rev">
+          <div class="rev__no">03 &middot; THE GOODBYE</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Engineers a farewell that hooks you back.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Ends on a resolution, never a hook.</span></div>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:4;--x:300;--y:-140;--r:-5">
+        <div class="rev">
+          <div class="rev__no">04 &middot; DEFAULTS</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Pre-checks whatever suits the seller.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Pre-decides only what undoes in one command.</span></div>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:5;--x:-340;--y:-52;--r:6">
+        <div class="rev">
+          <div class="rev__no">05 &middot; ANCHORING</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Anchors you with a struck-through price.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">No number without its provenance.</span></div>
+          <span class="rev__tag">⚙ enforced by a hook</span>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:6;--x:280;--y:160;--r:-7">
+        <div class="rev">
+          <div class="rev__no">06 &middot; FRAMING</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Frames it as a loss to force the move.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Reports loss and gain in the same terms.</span></div>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:7;--x:-290;--y:120;--r:-4">
+        <div class="rev">
+          <div class="rev__no">07 &middot; SOCIAL PROOF</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">&ldquo;Ten thousand satisfied customers.&rdquo;</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Cites the mechanism, never the headcount.</span></div>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:8;--x:320;--y:-118;--r:6">
+        <div class="rev">
+          <div class="rev__no">08 &middot; URGENCY</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Manufactures a countdown.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Urgency carries a date and a source.</span></div>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:9;--x:-270;--y:-160;--r:5">
+        <div class="rev">
+          <div class="rev__no">09 &middot; CERTAINTY</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Never shows a crack.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">States its holes, and what it cannot do.</span></div>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:10;--x:300;--y:130;--r:-6">
+        <div class="rev">
+          <div class="rev__no">10 &middot; SYCOPHANCY</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Flatters you to keep you.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">Contradicts you when it disagrees.</span></div>
+          <span class="rev__tag rev__tag--soft">no commercial equivalent; specific to agents</span>
+        </div>
+      </div>
+
+      <div class="frag" style="--i:11;--x:-310;--y:60;--r:4">
+        <div class="rev">
+          <div class="rev__no">11 &middot; ANTHROPOMORPHISM</div>
+          <div class="rev__row"><span class="rev__k">Persuasion</span>
+            <span class="rev__was">Simulates attachment to hold you.</span></div>
+          <div class="rev__row"><span class="rev__k">Esprit</span>
+            <span class="rev__now">No affect used as a lever.</span></div>
+          <span class="rev__tag rev__tag--soft">no commercial equivalent; specific to agents</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="fog"></div>
+    <div class="hud"><div class="hud__rail" id="rail"></div>
+      <div><b id="hudN">00</b> / 11<br>REVERSALS</div></div>
+  </div>
+</section>
+
+<!-- ═══ WHY IT HAPPENS ═══════════════════════════════════════════════════ -->
+<section data-sc-act="pin" data-sc-span="1.7" aria-label="Why it happens">
+  <div data-sc-stage class="mid">
+    <div class="wrap sec">
+      <div class="kicker" data-sc-cue="0.02">The problem</div>
+      <h2 data-sc-cue="0.06">An agent does this by default.<br>Without meaning to.</h2>
+      <p data-sc-cue="0.14">The sciences of persuasion were built to <b>make a human act</b>.
+        They work. That is the problem: an agent applies them with no intent, because
+        they saturate the commercial language it is made of.</p>
+      <p data-sc-cue="0.26">An agent that says <b>&ldquo;this will take about three days&rdquo;</b>
+        has just anchored a human decision on a number it invented, with no intent
+        and with no one noticing.</p>
+      <p data-sc-cue="0.4" style="font-size:15px">Not speculation. The Center for Democracy
+        &amp; Technology's May 2026 taxonomy of 37 chatbot dark patterns puts it plainly:
+        with chatbots, dark patterns may emerge from system behaviours rather than a
+        deliberate intent to deceive.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ THE CONTRACT ═════════════════════════════════════════════════════ -->
+<section data-sc-act="pin" data-sc-span="2" aria-label="The autonomy contract">
+  <div data-sc-stage class="mid">
+    <div class="wrap sec">
+      <div class="kicker" data-sc-cue="0.02">The autonomy contract</div>
+      <h2 data-sc-cue="0.05">It acts alone on everything reversible.<br>It stops dead on three acts.</h2>
+      <p data-sc-cue="0.12">A <b>PreToolUse</b> hook enforces all three. It forbids none of
+        these acts. It forbids them being <b>silent</b>.</p>
+      <div class="term" data-sc-cue="0.2"><span class="no">node kie.mjs shot …                                  ⛔ refused</span>
+<span class="ok">ESPRIT_BUDGET_OK="~3 USD, approved" node …           ✓ passes</span>
+
+<span class="no">rm -rf ~/project/old                                 ⛔ refused</span>
+<span class="ok">ESPRIT_DELETE_OK="duplicate, diff -rq empty" rm …    ✓ passes</span>
+
+<span class="no">git push origin main                                 ⛔ refused</span>
+<span class="ok">ESPRIT_PUBLISH_OK="reviewed, go received" git …      ✓ passes</span></div>
+      <p data-sc-cue="0.34" style="margin-top:24px">The prefix writes the announcement into
+        the session transcript. <b>What is not announced is not executable.</b> This is
+        not a spend cap. It is informed consent, mechanised.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHAT IS ACTUALLY ENFORCED ════════════════════════════════════════
+     Reversal 9 turned on the page itself: the honest number is the headline,
+     not the footnote. -->
+<section data-sc-act="pin" data-sc-span="2" aria-label="What is actually enforced">
+  <div data-sc-stage class="mid">
+    <div class="wrap sec">
+      <div class="kicker" data-sc-cue="0.02">What is actually enforced</div>
+      <h2 data-sc-cue="0.05">Two of eleven are mechanical.<br>Nine are prose.</h2>
+      <p data-sc-cue="0.12">Most projects leave this vague. Saying it out loud <b>is</b> reversal 9.</p>
+      <div class="grid2">
+        <div class="tile tile--on" data-sc-cue="0.18">
+          <h3>⚙ 01 &middot; Cost before commitment</h3>
+          <p>PreToolUse hook. Blocks the three silent acts. 45-case test suite.</p>
+        </div>
+        <div class="tile tile--on" data-sc-cue="0.22">
+          <h3>⚙ 05 &middot; No number without provenance</h3>
+          <p>Stop hook. Reads the transcript, flags asserted numbers. Warns, never blocks.</p>
+        </div>
+        <div class="tile" data-sc-cue="0.26">
+          <h3>02 – 04, 06 – 09</h3>
+          <p>Prose in the skill. The model chooses to honour them.</p>
+        </div>
+        <div class="tile" data-sc-cue="0.3">
+          <h3>10 – 11</h3>
+          <p>Detecting flattery or simulated affect in free text is unsolved. No hook.</p>
+        </div>
+      </div>
+      <p data-sc-cue="0.42" style="margin-top:26px;font-size:15px">The detector's precision came
+        from one insight: <b>the discriminator is not the number, it is what precedes it.</b>
+        &ldquo;The average basket is 3,000 MAD&rdquo; asserts, and is flagged. &ldquo;A product
+        at 3,000 MAD&rdquo; illustrates, and is ignored. On a 1,691-line corpus: 34 flags with
+        lexical matching alone, 3 with a grammatical assertion filter, 1 after a hypothetical
+        filter (a true positive), and 0 once the corpus was corrected.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DEBTS, THEN INSTALL ══════════════════════════════════════════════
+     Reversal 3: the page ends on a resolution, not a hook. And reversal 1:
+     the debts come BEFORE the call to action — the cost before the commitment. -->
+<footer style="padding:9vh 0 0">
+  <div class="wrap sec">
+
+    <div class="kicker" data-sc-in>Known debts</div>
+    <h2 data-sc-in style="font-size:clamp(26px,4.6vw,40px)">What it does not do.</h2>
+    <ul class="debts" data-sc-stagger="70">
+      <li><b>It is not a security guardrail.</b> It caps nothing and stops no attack.
+          AgentOps and compass do that, and have done it longer.</li>
+      <li><b>The guard is bypassable</b> by one level of indirection: eval, a subshell,
+          a script. It stops a distracted agent, not a determined one. That is the
+          intended scope: the thesis is that the manipulation here is unintentional.</li>
+      <li><b>Codex's hook schema has never been exercised.</b> The hooks' commands
+          run and behave correctly against the documented layout, but no Codex
+          runtime has ever loaded the config that invokes them.</li>
+      <li><b>It is not neutral.</b> Every rule costs speed, fluency, sometimes a yes you
+          would otherwise have obtained. That is the deliberate price.</li>
+    </ul>
+
+    <div style="margin-top:62px" data-sc-in>
+      <div class="kicker">Install</div>
+      <div class="term">claude plugin marketplace add selectess/esprit
+claude plugin install esprit@esprit
+
+<span class="cm"># then /esprit:esprit — or simply "take over"</span>
+<span class="cm"># hooks activate on the next plugin load, not at install</span></div>
+      <p style="margin-top:26px"><a class="cta" href="https://github.com/selectess/esprit">Repository</a></p>
+    </div>
+
+    <div class="foot">
+      Skill governance works on provenance before installation. Esprit works on conduct
+      during execution. A perfectly safe skill can still lead an agent to anchor a
+      decision on an invented number.<br><br>
+      MIT. Sources:
+      <a href="https://cdt.org/insights/dark-patterns-in-ai-chatbots-a-taxonomy-to-inform-better-design/">CDT, <em>Dark Patterns in AI Chatbots</em></a> (May 2026) ·
+      <a href="https://arxiv.org/abs/2503.10728">DarkBench</a> (ICLR 2025) ·
+      <a href="https://arxiv.org/abs/2508.19258">Emotional Manipulation by AI Companions</a> (HBS 2025) ·
+      <a href="https://baymard.com/">Baymard Institute</a>
+    </div>
+  </div>
+</footer>
+
+<script src="scrollcraft.js"></script>
+<script>
+ScrollCraft.mount(document.body);
+
+/* Two jobs the CSS cannot do.
+
+   Read the playhead back out for the counter and the rail — and, the one
+   that actually matters, keep every fragment that is not at the reading
+   plane out of the accessibility tree. A screen reader walking eleven
+   overlapping cards hears an unordered pile; this leaves exactly one card
+   present at a time, which is what a sighted reader gets. */
+(function(){
+  var deck = document.getElementById('deck');
+  if (!deck) return;
+  var frags = [].slice.call(deck.querySelectorAll('.frag'));
+  var hudN  = document.getElementById('hudN');
+  var rail  = document.getElementById('rail');
+
+  /* Without the camera every fragment is in flow and every one is legible,
+     so hiding ten of them would be a regression, not an improvement. */
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  frags.forEach(function(f, i){ if (i) f.setAttribute('aria-hidden','true'); });
+
+  /* --play cannot be read back. An unregistered custom property returns its
+     token stream, so getPropertyValue('--play') yields the literal string
+     "calc(max(0, 0.2520 - .07) * 12.4)" and parseFloat gives NaN. Only
+     --sc-p, which the engine writes as a plain number, reads back cleanly,
+     so the playhead is recomputed here from the same two constants. They
+     are duplicated between the stylesheet and this function; changing one
+     without the other desynchronises the counter from the collage. */
+  var HOLD = 0.07, SLOTS = 12.4;
+  var act = deck.closest('[data-sc-act]');
+
+  var last = 0;
+  (function frame(){
+    var p = parseFloat(getComputedStyle(act).getPropertyValue('--sc-p')) || 0;
+    var play = Math.max(0, p - HOLD) * SLOTS;
+    var near = Math.max(0, Math.min(frags.length - 1, Math.round(play)));
+    if (near !== last) {
+      frags[last].setAttribute('aria-hidden','true');
+      frags[near].removeAttribute('aria-hidden');
+      if (hudN) hudN.textContent = ('0' + near).slice(-2);
+      last = near;
+    }
+    if (rail) rail.style.setProperty('--rail', (play / 11).toFixed(4));
+    requestAnimationFrame(frame);
+  })();
+})();
+</script>
+</body>
+</html>

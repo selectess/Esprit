@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Esprit">
+  <title>Esprit</title>
+  <!-- The agent: a bounded field. -->
+  <circle cx="64" cy="64" r="52" fill="none" stroke="currentColor" stroke-width="6" opacity=".22"/>
+  <!-- Persuasion points outward. Struck through. -->
+  <g opacity=".22" stroke="currentColor" stroke-width="6" stroke-linecap="square">
+    <path d="M64 64 H112"/>
+    <path d="M99 51 L112 64 L99 77" fill="none"/>
+  </g>
+  <!-- Esprit points inward, at its own centre. -->
+  <g stroke="currentColor" stroke-width="9" stroke-linecap="square" fill="none">
+    <path d="M6 64 H60"/>
+    <path d="M45 49 L60 64 L45 79"/>
+  </g>
+  <circle cx="64" cy="64" r="7" fill="currentColor"/>
+</svg>

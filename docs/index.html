@@ -81,9 +81,11 @@ a{color:var(--sc-accent)}
   --x:0; --y:0; --r:0; --i:0;
 
   --d: calc(var(--i) - var(--play));            /* signed distance, in slots */
-  /* Scatter, wider than the distance so the very next fragment already clears
-     the centre. At 1:1 a 660px card one slot back still sits on the title. */
-  --s: clamp(0, calc(var(--d) * 1.4), 4.2);
+  /* Scatter, and it has to outrun the perspective. A fragment one slot back
+     sits at Z -540, which the 1150px perspective shrinks to 0.68 — so its
+     offset shrinks with it and it drifts back toward the centre, onto the
+     title. The multiplier and the cap are both set past that shrink. */
+  --s: clamp(0, calc(var(--d) * 2.15), 5.4);
 
   transform:
     translate(-50%,-50%)

@@ -21,6 +21,13 @@
 
 ---
 
+**Esprit is a Claude Code plugin.** It gives an autonomous agent a conduct layer: the
+agent works unsupervised on everything reversible, and a `PreToolUse` hook refuses any
+spend, deletion or `git push` that has not been announced first. A `Stop` hook flags
+numbers asserted without provenance, in French and English.
+
+---
+
 > **Two of eleven reversals are mechanical. Nine are prose the model chooses to
 > honour.** Most projects leave that ratio vague. Publishing it is itself one of
 > the eleven — see [what is actually enforced](#what-is-actually-enforced).
@@ -185,8 +192,11 @@ node plugins/esprit/scripts/anchor-lint.mjs --self-test
 ## What Esprit is not
 
 - **Not a security guardrail.** It caps nothing and protects against no attack.
-  [AgentOps](https://github.com/garethdaine/agentops) and
-  [compass](https://github.com/dshakes/compass) do that, and have done it longer.
+  [garethdaine/agentops](https://github.com/garethdaine/agentops) and
+  [compass](https://github.com/dshakes/compass) do that, and both predate this.
+  The owner-qualified link is deliberate: the AgentOps most readers picture is
+  [AgentOps-AI/agentops](https://github.com/AgentOps-AI/agentops), an unrelated Python
+  SDK for agent monitoring, and the earlier unqualified link invited that confusion.
 - **Not self-modifying.** Domain knowledge may evolve from measured evidence;
   conduct never does. *The layer that governs change cannot be modified by what it
   governs.*
@@ -208,6 +218,22 @@ A perfectly safe skill can still lead an agent to anchor a decision on an invent
 number. No provenance model catches that.
 
 This is not an invention. It is a blind spot, correctly identified.
+
+### The nearest neighbour, named
+
+The closest project to this one is
+[waitdeadai/llm-dark-patterns](https://github.com/waitdeadai/llm-dark-patterns) — the same
+thesis, the same host, and it got there first (May 2026). It is a suite of `Stop` hooks
+that suppress sycophancy, paternalism and false-success **at the textual boundary**: it
+judges what the agent says.
+
+Esprit overlaps it on reversal 5 and differs on the other ten. Its load-bearing hook is
+`PreToolUse`: it gates the **action** — the spend, the deletion, the push — before the
+call leaves. Text and action are different boundaries, and a project that guards one does
+not guard the other.
+
+Saying which project came first, and that it overlaps, is reversal 9. A comparison table
+that omitted the incumbent would be reversal 7 with extra steps.
 
 ## Known debts
 

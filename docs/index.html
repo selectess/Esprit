@@ -89,8 +89,12 @@ a{color:var(--sc-accent)}
     translate(-50%,-50%)
     translate3d(
       calc(var(--x) * var(--s) * 1px),
-      calc(var(--y) * var(--s) * 1px + min(var(--d), 0) * 130px),
-      clamp(-4600px, calc(var(--d) * -540px), 260px)
+      calc(var(--y) * var(--s) * 1px + min(var(--d), 0) * 210px),
+      /* Upper bound 0, never positive. A fragment past the plane used to take
+         positive Z, which scaled it up and floated it — still a third opaque —
+         over the fragment arriving behind it: two headlines interleaved into
+         unreadable soup. It recedes and rises out of frame instead. */
+      clamp(-4600px, calc(var(--d) * -540px), 0px)
     )
     rotateY(clamp(-22deg, calc(var(--d) * 6deg), 30deg))
     rotate(calc(var(--r) * var(--s) * 1deg));
@@ -100,7 +104,7 @@ a{color:var(--sc-accent)}
      The haze has to bite from the first slot back: at a gentler rate the
      fragment behind the one being read stays fully opaque and competes
      with it, which is the difference between depth and clutter. */
-  opacity: calc((1.06 - var(--d) * .32) * (1 + min(var(--d), 0) * 2.1));
+  opacity: calc((1.06 - var(--d) * .32) * (1 + min(var(--d), 0) * 3.4));
   will-change:transform,opacity;
 }
 /* Scenery must not be reachable: a fragment away from the plane is out of
@@ -527,7 +531,13 @@ ScrollCraft.mount(document.body);
   (function frame(){
     var p = parseFloat(getComputedStyle(act).getPropertyValue('--sc-p')) || 0;
     var play = Math.max(0, p - HOLD) * SLOTS;
-    var near = Math.max(0, Math.min(frags.length - 1, Math.round(play)));
+    /* ceil, not round. The dominant fragment is the first one that has not yet
+       passed the plane: at play 2.4, fragment 2 is already leaving and nearly
+       transparent while 3 is the one being read. Rounding named the card the
+       reader could no longer see. The 0.29 is not arbitrary: it is where the
+       exit fade reaches zero, so the threshold names whichever fragment the
+       reader can still actually see. */
+    var near = Math.max(0, Math.min(frags.length - 1, Math.ceil(play - 0.29)));
     if (near !== last) {
       frags[last].setAttribute('aria-hidden','true');
       frags[near].removeAttribute('aria-hidden');

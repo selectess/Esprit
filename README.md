@@ -231,8 +231,4 @@ This is not an invention. It is a blind spot, correctly identified.
 
 MIT, © 2026 Mehdi Wahbi.
 
-The page under `docs/` is driven by **[scrollcraft](https://github.com/nateherkai/scroll-craft)**,
-a scroll-driven interaction runtime by Nate Herk, vendored as `docs/scrollcraft.js`
-and `docs/scrollcraft.css`. It is MIT too, and its notice travels with it in
-`docs/scrollcraft.LICENSE`. The engine is used unmodified; every effect on the
-page is authored in `docs/index.html` against its `data-sc-*` attributes.
+Third-party notices ship alongside the code they cover, under `docs/`.

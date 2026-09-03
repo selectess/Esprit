@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://selectess.github.io/esprit/"><strong>The eleven reversals, as a page →</strong></a>
+  <a href="https://selectess.github.io/Esprit/"><strong>The eleven reversals, as a page →</strong></a>
 </p>
 
 ---
@@ -139,7 +139,7 @@ node plugins/esprit/scripts/anchor-lint.mjs --self-test   # 26/26: 14 FR, 12 EN
 ## Install
 
 ```bash
-claude plugin marketplace add selectess/esprit
+claude plugin marketplace add selectess/Esprit
 claude plugin install esprit@esprit
 ```
 

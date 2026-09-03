@@ -3,8 +3,8 @@
   "description": "A conduct layer for autonomous agents. Not a competence — it brings no know-how. Its rules are the documented dark patterns of persuasion, turned inward, so the mechanisms built to make a human act instead make the agent legible. Two of eleven are hook-enforced; the plugin publishes which.",
   "version": "1.0.0",
   "author": { "name": "Mehdi Wahbi" },
-  "homepage": "https://github.com/selectess/esprit",
-  "repository": "https://github.com/selectess/esprit",
+  "homepage": "https://github.com/selectess/Esprit",
+  "repository": "https://github.com/selectess/Esprit",
   "license": "MIT",
   "keywords": ["agent-conduct","dark-patterns","guardrails","hooks","disclosure","autonomy"]
 }
